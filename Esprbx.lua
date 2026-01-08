@@ -11,11 +11,11 @@ screenGui.Name = "ESP_TP_TargetHelper"
 screenGui.Parent = player:WaitForChild("PlayerGui")
 screenGui.ResetOnSpawn = false
 
+-- Меню
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 300, 0, 450)
 mainFrame.Position = UDim2.new(0.5, -150, 0.5, -225)
 mainFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
-mainFrame.BackgroundTransparency = 0
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Draggable = true
@@ -25,15 +25,12 @@ local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0,10)
 mainCorner.Parent = mainFrame
 
+-- Вкладки
 local titleFrame = Instance.new("Frame")
 titleFrame.Parent = mainFrame
 titleFrame.Size = UDim2.new(1,0,0,35)
-titleFrame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+titleFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
 titleFrame.BorderSizePixel = 0
-
-local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0,10)
-titleCorner.Parent = titleFrame
 
 local espTabBtn = Instance.new("TextButton")
 espTabBtn.Parent = titleFrame
@@ -47,7 +44,7 @@ local targetTabBtn = Instance.new("TextButton")
 targetTabBtn.Parent = titleFrame
 targetTabBtn.Size = UDim2.new(0.34,0,1,0)
 targetTabBtn.Position = UDim2.new(0.33,0,0,0)
-targetTabBtn.Text = "Target Helper"
+targetTabBtn.Text = "Target"
 targetTabBtn.BackgroundColor3 = Color3.fromRGB(80,80,90)
 targetTabBtn.TextColor3 = Color3.fromRGB(200,200,200)
 
@@ -59,6 +56,7 @@ tpTabBtn.Text = "Teleport"
 tpTabBtn.BackgroundColor3 = Color3.fromRGB(80,80,90)
 tpTabBtn.TextColor3 = Color3.fromRGB(200,200,200)
 
+-- Контейнеры
 local espContainer = Instance.new("ScrollingFrame")
 espContainer.Parent = mainFrame
 espContainer.Size = UDim2.new(1,-10,1,-45)
@@ -96,110 +94,7 @@ tpTabBtn.MouseButton1Click:Connect(function()
     tpContainer.Visible = true
 end)
 
--- ESP
-local espEnabled = true
-local espObjects = {}
-
-local function createESP(character)
-    if not character or espObjects[character] then return end
-    local highlight = Instance.new("Highlight")
-    highlight.FillTransparency = 0.6
-    highlight.OutlineTransparency = 0
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    highlight.Adornee = character
-    highlight.Parent = character
-    espObjects[character] = highlight
-end
-
-local function updateESP()
-    if not espEnabled then return end
-    for _, otherPlayer in ipairs(Players:GetPlayers()) do
-        if otherPlayer ~= player and otherPlayer.Character then
-            createESP(otherPlayer.Character)
-        end
-    end
-end
-
-RunService.RenderStepped:Connect(updateESP)
-
--- Target Helper
-local targetMarker = Instance.new("BillboardGui")
-targetMarker.Size = UDim2.new(0,100,0,50)
-targetMarker.AlwaysOnTop = true
-local markerLabel = Instance.new("TextLabel")
-markerLabel.Size = UDim2.new(1,0,1,0)
-markerLabel.BackgroundTransparency = 1
-markerLabel.TextColor3 = Color3.fromRGB(255,50,50)
-markerLabel.Font = Enum.Font.GothamBold
-markerLabel.TextSize = 14
-markerLabel.Text = "Target"
-markerLabel.Parent = targetMarker
-
-local function findNearestEnemy()
-    local nearest=nil
-    local shortest=math.huge
-    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return nil end
-    local myPos = player.Character.HumanoidRootPart.Position
-    for _, pl in ipairs(Players:GetPlayers()) do
-        if pl~=player and pl.Character and pl.Character:FindFirstChild("HumanoidRootPart") then
-            local dist = (pl.Character.HumanoidRootPart.Position-myPos).Magnitude
-            if dist<shortest then
-                shortest=dist
-                nearest=pl
-            end
-        end
-    end
-    return nearest
-end
-
-spawn(function()
-    while true do
-        if targetContainer.Visible then
-            local target = findNearestEnemy()
-            if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                targetMarker.Adornee = target.Character.HumanoidRootPart
-                targetMarker.Parent = target.Character.HumanoidRootPart
-                markerLabel.Text = "Target\nVOF\nDist: "..math.floor((target.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude)
-            else
-                targetMarker.Parent = nil
-            end
-        end
-        wait(1)
-    end
-end)
-
--- Teleport
-local function updateTPList()
-    for _, obj in ipairs(tpContainer:GetChildren()) do
-        if obj:IsA("TextButton") then obj:Destroy() end
-    end
-    local yPos = 10
-    for _, pl in ipairs(Players:GetPlayers()) do
-        if pl~=player then
-            local btn = Instance.new("TextButton")
-            btn.Parent = tpContainer
-            btn.Size = UDim2.new(1,-10,0,30)
-            btn.Position = UDim2.new(0,5,0,yPos)
-            btn.Text = pl.Name
-            btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-            btn.TextColor3 = Color3.new(1,1,1)
-            btn.MouseButton1Click:Connect(function()
-                local char = pl.Character
-                if char and char:FindFirstChild("HumanoidRootPart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    local hrp = char.HumanoidRootPart
-                    player.Character.HumanoidRootPart.CFrame = hrp.CFrame + Vector3.new(0,3,0)
-                end
-            end)
-            yPos=yPos+35
-        end
-    end
-end
-
-Players.PlayerAdded:Connect(updateTPList)
-Players.PlayerRemoving:Connect(updateTPList)
-updateTPList()
-
--- Драг кнопка для открытия меню
+-- Драг кнопка меню
 local menuBtn = Instance.new("TextButton")
 menuBtn.Parent = screenGui
 menuBtn.Size = UDim2.new(0,50,0,50)
@@ -220,11 +115,13 @@ menuBtn.MouseButton1Down:Connect(function(x,y)
     dragging = true
     dragOffset = Vector2.new(x,y) - Vector2.new(menuBtn.AbsolutePosition.X, menuBtn.AbsolutePosition.Y)
 end)
+
 UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = false
     end
 end)
+
 UserInputService.InputChanged:Connect(function(input)
     if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
         menuBtn.Position = UDim2.new(0, input.Position.X - dragOffset.X, 0, input.Position.Y - dragOffset.Y)
@@ -233,4 +130,33 @@ end)
 
 menuBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = not mainFrame.Visible
+end)
+
+-- Брендинг (плавающий)
+local branding = Instance.new("TextLabel")
+branding.Parent = screenGui
+branding.Text = "by @SVERHNOVACOLA"
+branding.TextColor3 = Color3.fromRGB(255,255,255)
+branding.BackgroundTransparency = 1
+branding.Font = Enum.Font.GothamBold
+branding.TextSize = 18
+branding.Position = UDim2.new(0.5, -75, 0.1, 0)
+
+local velocity = Vector2.new(3,3)
+local screenSize = workspace.CurrentCamera.ViewportSize
+RunService.RenderStepped:Connect(function()
+    local pos = branding.Position
+    local x = pos.X.Offset + velocity.X
+    local y = pos.Y.Offset + velocity.Y
+
+    if x <= 0 or x >= screenSize.X - branding.TextBounds.X then
+        velocity = Vector2.new(-velocity.X, velocity.Y)
+        x = math.clamp(x, 0, screenSize.X - branding.TextBounds.X)
+    end
+    if y <= 0 or y >= screenSize.Y - branding.TextBounds.Y then
+        velocity = Vector2.new(velocity.X, -velocity.Y)
+        y = math.clamp(y, 0, screenSize.Y - branding.TextBounds.Y)
+    end
+
+    branding.Position = UDim2.new(0, x, 0, y)
 end)
