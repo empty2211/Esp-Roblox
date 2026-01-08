@@ -1,111 +1,72 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local Teams = game:GetService("Teams")
-local player = Players.LocalPlayer
-local camera = workspace.CurrentCamera
+local Players=game:GetService("Players")
+local RunService=game:GetService("RunService")
+local UserInputService=game:GetService("UserInputService")
+local player=Players.LocalPlayer
+local camera=workspace.CurrentCamera
 
-local gui = Instance.new("ScreenGui", player.PlayerGui)
-gui.Name = "FINAL_GUI"
-gui.ResetOnSpawn = false
+local gui=Instance.new("ScreenGui",player:WaitForChild("PlayerGui"))
+gui.ResetOnSpawn=false
 
-local menuBtn = Instance.new("TextButton", gui)
-menuBtn.Size = UDim2.new(0,50,0,50)
-menuBtn.Position = UDim2.new(0,20,0,200)
-menuBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-menuBtn.Text = "≡"
-menuBtn.TextColor3 = Color3.new(1,1,1)
-menuBtn.Font = Enum.Font.GothamBold
-menuBtn.TextSize = 24
-menuBtn.BorderSizePixel = 0
-menuBtn.Active = true
-Instance.new("UICorner", menuBtn).CornerRadius = UDim.new(1,0)
+local openBtn=Instance.new("TextButton",gui)
+openBtn.Size=UDim2.new(0,50,0,50)
+openBtn.Position=UDim2.new(0,20,0,200)
+openBtn.Text="≡"
+openBtn.BackgroundColor3=Color3.fromRGB(0,0,0)
+openBtn.TextColor3=Color3.new(1,1,1)
+openBtn.BorderSizePixel=0
+openBtn.Active=true
+openBtn.Draggable=true
+Instance.new("UICorner",openBtn)
 
-local dragging, dragStart, startPos, dragInput = false
+local frame=Instance.new("Frame",gui)
+frame.Size=UDim2.new(0,360,0,480)
+frame.Position=UDim2.new(0.5,-180,0.5,-240)
+frame.BackgroundColor3=Color3.fromRGB(0,0,0)
+frame.Visible=false
+frame.Active=true
+frame.Draggable=true
+Instance.new("UICorner",frame)
 
-menuBtn.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = true
-		dragStart = input.Position
-		startPos = menuBtn.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
+openBtn.MouseButton1Click:Connect(function()
+	frame.Visible=not frame.Visible
 end)
-
-menuBtn.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-		dragInput = input
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if dragging and input == dragInput then
-		local delta = input.Position - dragStart
-		menuBtn.Position = UDim2.new(0, startPos.X.Offset + delta.X, 0, startPos.Y.Offset + delta.Y)
-	end
-end)
-
-local menu = Instance.new("Frame", gui)
-menu.Size = UDim2.new(0,320,0,420)
-menu.Position = UDim2.new(0.5,-160,0.5,-210)
-menu.BackgroundColor3 = Color3.fromRGB(0,0,0)
-menu.BorderSizePixel = 0
-menu.Visible = false
-menu.Active = true
-menu.Draggable = true
-Instance.new("UICorner", menu).CornerRadius = UDim.new(0,12)
-
-local function toggleMenu()
-	menu.Visible = not menu.Visible
-end
-
-menuBtn.MouseButton1Click:Connect(toggleMenu)
 
 UserInputService.InputBegan:Connect(function(i,g)
-	if not g and i.KeyCode == Enum.KeyCode.Q then
-		toggleMenu()
+	if g then return end
+	if i.KeyCode==Enum.KeyCode.Q then
+		frame.Visible=not frame.Visible
 	end
 end)
 
-local tabBar = Instance.new("Frame", menu)
-tabBar.Size = UDim2.new(1,0,0,40)
-tabBar.BackgroundColor3 = Color3.fromRGB(0,0,0)
-tabBar.BorderSizePixel = 0
+local tabBar=Instance.new("Frame",frame)
+tabBar.Size=UDim2.new(1,0,0,40)
+tabBar.BackgroundTransparency=1
 
-local function tabButton(text,pos)
-	local b = Instance.new("TextButton", tabBar)
-	b.Size = UDim2.new(0.33,0,1,0)
-	b.Position = pos
-	b.Text = text
-	b.Font = Enum.Font.GothamBold
-	b.TextSize = 14
-	b.TextColor3 = Color3.new(1,1,1)
-	b.BackgroundColor3 = Color3.fromRGB(20,20,20)
-	b.BorderSizePixel = 0
+local function tabBtn(txt,x)
+	local b=Instance.new("TextButton",tabBar)
+	b.Size=UDim2.new(0.33,0,1,0)
+	b.Position=UDim2.new(x,0,0,0)
+	b.Text=txt
+	b.BackgroundColor3=Color3.fromRGB(20,20,20)
+	b.TextColor3=Color3.new(1,1,1)
+	b.BorderSizePixel=0
 	return b
 end
 
-local espTab = tabButton("ESP",UDim2.new(0,0,0,0))
-local tgtTab = tabButton("Target",UDim2.new(0.33,0,0,0))
-local tpTab  = tabButton("TP",UDim2.new(0.66,0,0,0))
+local espBtn=tabBtn("ESP",0)
+local tgtBtn=tabBtn("Target",0.33)
+local tpBtn=tabBtn("TP",0.66)
 
-local function container()
-	local f = Instance.new("Frame", menu)
-	f.Size = UDim2.new(1,0,1,-40)
-	f.Position = UDim2.new(0,0,0,40)
-	f.BackgroundTransparency = 1
-	f.Visible = false
-	return f
+local espC=Instance.new("Frame",frame)
+local tgtC=Instance.new("Frame",frame)
+local tpC=Instance.new("Frame",frame)
+for _,c in ipairs({espC,tgtC,tpC}) do
+	c.Size=UDim2.new(1,0,1,-40)
+	c.Position=UDim2.new(0,0,0,40)
+	c.BackgroundTransparency=1
+	c.Visible=false
 end
-
-local espC = container()
-local tgtC = container()
-local tpC  = container()
-espC.Visible = true
+espC.Visible=true
 
 local function show(c)
 	espC.Visible=false
@@ -114,113 +75,152 @@ local function show(c)
 	c.Visible=true
 end
 
-espTab.MouseButton1Click:Connect(function() show(espC) end)
-tgtTab.MouseButton1Click:Connect(function() show(tgtC) end)
-tpTab.MouseButton1Click:Connect(function() show(tpC) end)
+espBtn.MouseButton1Click:Connect(function()show(espC)end)
+tgtBtn.MouseButton1Click:Connect(function()show(tgtC)end)
+tpBtn.MouseButton1Click:Connect(function()show(tpC)end)
 
-local toggles = {}
-local function toggle(text,y)
-	local b = Instance.new("TextButton", espC)
-	b.Size = UDim2.new(1,-20,0,35)
-	b.Position = UDim2.new(0,10,0,y)
-	b.BackgroundColor3 = Color3.fromRGB(20,20,20)
-	b.TextColor3 = Color3.new(1,1,1)
-	b.Text = text..": ON"
-	b.Font = Enum.Font.Gotham
-	b.TextSize = 14
-	b.BorderSizePixel = 0
-	Instance.new("UICorner", b)
-	toggles[text]=true
-	b.MouseButton1Click:Connect(function()
-		toggles[text]=not toggles[text]
-		b.Text = text..": "..(toggles[text] and "ON" or "OFF")
-	end)
+local espOn=false
+local espMap={}
+
+local function makeESP(char,plr)
+	if espMap[char] then return end
+	local h=Instance.new("Highlight",char)
+	h.FillTransparency=0.85
+	h.OutlineTransparency=0
+	h.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+	h.FillColor=plr.TeamColor.Color
+	espMap[char]=h
 end
-
-toggle("Name",10)
-toggle("Distance",55)
-toggle("HP",100)
-toggle("Team",145)
-
-local espObjects = {}
-
-local function teamColor(plr)
-	if plr.Team and plr.Team.TeamColor then
-		return plr.Team.TeamColor.Color
-	end
-	return Color3.new(1,1,1)
-end
-
-RunService.Heartbeat:Connect(function()
-	for _,pl in ipairs(Players:GetPlayers()) do
-		if pl~=player and pl.Character and pl.Character:FindFirstChild("Head") and pl.Character:FindFirstChild("HumanoidRootPart") then
-			if not espObjects[pl] then
-				local bb = Instance.new("BillboardGui", pl.Character.Head)
-				bb.Size = UDim2.new(0,200,0,70)
-				bb.AlwaysOnTop = true
-				local t = Instance.new("TextLabel", bb)
-				t.Size = UDim2.new(1,0,1,0)
-				t.BackgroundTransparency = 1
-				t.Font = Enum.Font.GothamBold
-				t.TextSize = 14
-				t.TextStrokeTransparency = 0.6
-				espObjects[pl]={bb=bb,t=t}
-			end
-			local data = espObjects[pl]
-			local txt=""
-			if toggles.Name then txt=pl.Name.."\n" end
-			if toggles.Distance then
-				local d=(pl.Character.HumanoidRootPart.Position-player.Character.HumanoidRootPart.Position).Magnitude
-				txt=txt..math.floor(d).."m\n"
-			end
-			if toggles.HP then
-				local h=pl.Character:FindFirstChildOfClass("Humanoid")
-				if h then txt=txt.."HP "..math.floor(h.Health).."\n" end
-			end
-			if toggles.Team then txt=txt.."["..(pl.Team and pl.Team.Name or "None").."]" end
-			data.t.Text=txt
-			data.t.TextColor3=teamColor(pl)
-		end
-	end
-end)
-
-local fov = 200
-local fovCircle = Drawing.new("Circle")
-fovCircle.Radius = fov
-fovCircle.Color = Color3.fromRGB(255,0,0)
-fovCircle.Thickness = 2
-fovCircle.Filled = false
 
 RunService.RenderStepped:Connect(function()
-	fovCircle.Position = Vector2.new(camera.ViewportSize.X/2,camera.ViewportSize.Y/2)
-	fovCircle.Visible = tgtC.Visible
-end)
-
-local targetLabel = Instance.new("TextLabel", tgtC)
-targetLabel.Size = UDim2.new(1,0,0,40)
-targetLabel.Position = UDim2.new(0,0,0,20)
-targetLabel.BackgroundTransparency = 1
-targetLabel.TextColor3 = Color3.new(1,0,0)
-targetLabel.Font = Enum.Font.GothamBold
-targetLabel.TextSize = 18
-
-task.spawn(function()
-	while task.wait(1) do
-		if tgtC.Visible and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-			local nearest,dist=nil,fov
-			for _,pl in ipairs(Players:GetPlayers()) do
-				if pl~=player and pl.Character and pl.Character:FindFirstChild("HumanoidRootPart") then
-					local p,onscreen=camera:WorldToViewportPoint(pl.Character.HumanoidRootPart.Position)
-					if onscreen then
-						local d=(Vector2.new(p.X,p.Y)-Vector2.new(camera.ViewportSize.X/2,camera.ViewportSize.Y/2)).Magnitude
-						if d<dist then
-							dist=d
-							nearest=pl
-						end
-					end
-				end
-			end
-			targetLabel.Text = nearest and ("Target: "..nearest.Name) or "Target: none"
+	if not espOn then return end
+	for _,pl in ipairs(Players:GetPlayers()) do
+		if pl~=player and pl.Character then
+			makeESP(pl.Character,pl)
 		end
 	end
 end)
+
+local espToggle=Instance.new("TextButton",espC)
+espToggle.Size=UDim2.new(1,-20,0,40)
+espToggle.Position=UDim2.new(0,10,0,10)
+espToggle.Text="ESP OFF"
+espToggle.BackgroundColor3=Color3.fromRGB(20,20,20)
+espToggle.TextColor3=Color3.new(1,1,1)
+espToggle.BorderSizePixel=0
+Instance.new("UICorner",espToggle)
+
+espToggle.MouseButton1Click:Connect(function()
+	espOn=not espOn
+	espToggle.Text=espOn and "ESP ON" or "ESP OFF"
+	if not espOn then
+		for _,h in pairs(espMap) do h:Destroy() end
+		espMap={}
+	end
+end)
+
+local marker=Instance.new("BillboardGui")
+marker.Size=UDim2.new(0,120,0,50)
+marker.AlwaysOnTop=true
+local ml=Instance.new("TextLabel",marker)
+ml.Size=UDim2.new(1,0,1,0)
+ml.BackgroundTransparency=1
+ml.TextColor3=Color3.new(1,0,0)
+ml.Font=Enum.Font.GothamBold
+ml.TextSize=14
+
+local lastTarget=nil
+local acc=0
+
+RunService.RenderStepped:Connect(function(dt)
+	acc+=dt
+	if acc<1 then return end
+	acc=0
+	if not tgtC.Visible then
+		marker.Parent=nil
+		return
+	end
+	local hrp=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+	local best,dist=nil,math.huge
+	for _,pl in ipairs(Players:GetPlayers()) do
+		if pl~=player and pl.Character and pl.Character:FindFirstChild("HumanoidRootPart") then
+			local d=(pl.Character.HumanoidRootPart.Position-hrp.Position).Magnitude
+			if d<dist then
+				dist=d
+				best=pl
+			end
+		end
+	end
+	if best then
+		marker.Parent=best.Character.HumanoidRootPart
+		ml.Text=best.Name.." ["..math.floor(dist).."]"
+	end
+end)
+
+local function giveTool()
+	if player.Backpack:FindFirstChild("tp @SVERHNOVACOLA") then return end
+	local tool=Instance.new("Tool")
+	tool.Name="tp @SVERHNOVACOLA"
+	tool.RequiresHandle=false
+	tool.Activated:Connect(function()
+		local char=player.Character
+		if not char then return end
+		local hrp=char:FindFirstChild("HumanoidRootPart")
+		if not hrp then return end
+		local ray=workspace:Raycast(
+			camera.CFrame.Position,
+			camera.CFrame.LookVector*1000,
+			RaycastParams.new()
+		)
+		if ray and ray.Position.Y>-5 then
+			hrp.CFrame=CFrame.new(ray.Position+Vector3.new(0,2.5,0))
+		end
+	end)
+	tool.Parent=player.Backpack
+end
+
+local y=10
+local give=Instance.new("TextButton",tpC)
+give.Size=UDim2.new(1,-20,0,40)
+give.Position=UDim2.new(0,10,0,y)
+give.Text="Give TP Tool"
+give.BackgroundColor3=Color3.fromRGB(20,20,20)
+give.TextColor3=Color3.new(1,1,1)
+give.BorderSizePixel=0
+Instance.new("UICorner",give)
+give.MouseButton1Click:Connect(giveTool)
+y+=50
+
+local function rebuildTP()
+	for _,v in ipairs(tpC:GetChildren()) do
+		if v:IsA("TextButton") and v~=give then v:Destroy() end
+	end
+	local y2=y
+	for _,pl in ipairs(Players:GetPlayers()) do
+		if pl~=player then
+			local b=Instance.new("TextButton",tpC)
+			b.Size=UDim2.new(1,-20,0,35)
+			b.Position=UDim2.new(0,10,0,y2)
+			b.Text="TP above "..pl.Name
+			b.BackgroundColor3=Color3.fromRGB(20,20,20)
+			b.TextColor3=Color3.new(1,1,1)
+			b.BorderSizePixel=0
+			Instance.new("UICorner",b)
+			b.MouseButton1Click:Connect(function()
+				if player.Character and pl.Character then
+					local a=player.Character:FindFirstChild("HumanoidRootPart")
+					local t=pl.Character:FindFirstChild("HumanoidRootPart")
+					if a and t then
+						a.CFrame=t.CFrame*CFrame.new(0,5,0)
+					end
+				end
+			end)
+			y2+=40
+		end
+	end
+end
+
+Players.PlayerAdded:Connect(rebuildTP)
+Players.PlayerRemoving:Connect(rebuildTP)
+rebuildTP()
