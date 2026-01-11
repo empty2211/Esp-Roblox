@@ -242,7 +242,7 @@ end
 
 openBtn.MouseButton1Up:Connect(toggleMenu)
 
--- Таб кнопок
+-- Таб кнопок (теперь 3 вкладки)
 local tabBar = Instance.new("Frame")
 tabBar.Name = "TabBar"
 tabBar.Parent = frame
@@ -254,17 +254,17 @@ local tabBarCorner = Instance.new("UICorner")
 tabBarCorner.CornerRadius = UDim.new(0, 10)
 tabBarCorner.Parent = tabBar
 
-local function tabBtn(txt, x)
+local function tabBtn(txt, x, width)
     local b = Instance.new("TextButton")
     b.Parent = tabBar
-    b.Size = UDim2.new(0.5, 0, 1, 0)
+    b.Size = UDim2.new(width or 0.333, 0, 1, 0)
     b.Position = UDim2.new(x, 0, 0, 0)
     b.Text = txt
     b.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     b.TextColor3 = Color3.new(1, 1, 1)
     b.BorderSizePixel = 0
     b.Font = Enum.Font.GothamBold
-    b.TextSize = 14
+    b.TextSize = 12
     
     local bCorner = Instance.new("UICorner")
     bCorner.CornerRadius = UDim.new(0, 8)
@@ -273,9 +273,12 @@ local function tabBtn(txt, x)
     return b
 end
 
-local espBtn = tabBtn("ESP", 0)
-local tpBtn = tabBtn("TP", 0.5)
+-- Создаем 3 вкладки
+local espBtn = tabBtn("ESP", 0, 0.333)
+local tpBtn = tabBtn("TP", 0.333, 0.333)
+local bindBtn = tabBtn("BINDS", 0.666, 0.334) -- Новая вкладка для биндов
 
+-- Контейнеры для каждой вкладки
 local espC = Instance.new("ScrollingFrame")
 espC.Name = "ESPContainer"
 espC.Parent = frame
@@ -298,25 +301,48 @@ tpC.ScrollBarThickness = 5
 tpC.CanvasSize = UDim2.new(0, 0, 0, 0)
 tpC.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
+-- Новая вкладка для биндов
+local bindC = Instance.new("ScrollingFrame")
+bindC.Name = "BindsContainer"
+bindC.Parent = frame
+bindC.Size = UDim2.new(1, 0, 1, -40)
+bindC.Position = UDim2.new(0, 0, 0, 40)
+bindC.BackgroundTransparency = 1
+bindC.Visible = false
+bindC.ScrollBarThickness = 5
+bindC.CanvasSize = UDim2.new(0, 0, 0, 0)
+bindC.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
 local function show(c)
     espC.Visible = false
     tpC.Visible = false
+    bindC.Visible = false
     c.Visible = true
 end
 
+-- Обработчики для кнопок вкладок
 espBtn.MouseButton1Click:Connect(function() 
     show(espC) 
     espBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 255)
     tpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    bindBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 end)
 
 tpBtn.MouseButton1Click:Connect(function() 
     show(tpC) 
     tpBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 255)
     espBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    bindBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 end)
 
-espBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 255)
+bindBtn.MouseButton1Click:Connect(function() 
+    show(bindC) 
+    bindBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 255)
+    espBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    tpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+end)
+
+espBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 255) -- По умолчанию активна ESP вкладка
 
 -- ===== ESP СИСТЕМА С НАСТРОЙКАМИ =====
 local espOn = false
@@ -415,27 +441,4 @@ local teamToggle = Instance.new("TextButton")
 teamToggle.Name = "TeamToggle"
 teamToggle.Parent = espC
 teamToggle.Size = UDim2.new(1, -20, 0, 40)
-teamToggle.Position = UDim2.new(0, 10, 0, yPosition)
-teamToggle.Text = "Команды: ВКЛ"
-teamToggle.BackgroundColor3 = Color3.fromRGB(60, 120, 255)
-teamToggle.BackgroundTransparency = 0.1
-teamToggle.TextColor3 = Color3.new(1, 1, 1)
-teamToggle.BorderSizePixel = 0
-teamToggle.Font = Enum.Font.Gotham
-teamToggle.TextSize = 14
-
-local teamCorner = Instance.new("UICorner")
-teamCorner.CornerRadius = UDim.new(0, 8)
-teamCorner.Parent = teamToggle
-
--- Обработчики для кнопок настроек
-distanceToggle.MouseButton1Click:Connect(function()
-    espSettings.showDistance = not espSettings.showDistance
-    distanceToggle.Text = "Дистанция: " .. (espSettings.showDistance and "ВКЛ" or "ВЫКЛ")
-    distanceToggle.BackgroundColor3 = espSettings.showDistance and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(45, 45, 55)
-end)
-
-healthToggle.MouseButton1Click:Connect(function()
-    espSettings.showHealth = not espSettings.showHealth
-    healthToggle.Text = "Здоровье: " .. (espSettings.showHealth and "ВКЛ" or "ВЫКЛ")
-    healthToggle.BackgroundColor3 = espSettings.showHealth and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(45, 45
+teamToggle.Position = UDi
