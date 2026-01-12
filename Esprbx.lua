@@ -17,6 +17,60 @@ gui.Name = "SquirtMenu"
 gui.Parent = player:WaitForChild("PlayerGui")
 gui.ResetOnSpawn = false
 
+-- Брендинг "by Squirt"
+local branding = Instance.new("TextLabel")
+branding.Name = "Brand"
+branding.Size = UDim2.new(0, 120, 0, 30)
+branding.Position = UDim2.new(1, -130, 0, 10)
+branding.AnchorPoint = Vector2.new(1, 0)
+branding.Text = "by Squirt"
+branding.TextColor3 = Color3.fromRGB(0, 255, 0)
+branding.BackgroundTransparency = 1
+branding.Font = Enum.Font.GothamBold
+branding.TextSize = 18
+branding.TextStrokeTransparency = 0.6
+branding.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+branding.Parent = gui
+
+-- Кнопка открытия главного меню
+local openBtn = Instance.new("TextButton")
+openBtn.Name = "OpenMenu"
+openBtn.Size = UDim2.new(0.05, 0, 0.114, 0)
+openBtn.Position = UDim2.new(0.05, 0, 0.25, 0)
+openBtn.Text = "Menu"
+openBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+openBtn.BackgroundTransparency = 0.5
+openBtn.TextColor3 = Color3.new(1, 1, 1)
+openBtn.TextScaled = true
+openBtn.Font = Enum.Font.GothamBold
+openBtn.TextSize = 20
+openBtn.Visible = true
+openBtn.Parent = gui
+openBtn.Active = true
+
+local openBtnCorner = Instance.new("UICorner")
+openBtnCorner.CornerRadius = UDim.new(1, 0)
+openBtnCorner.Parent = openBtn
+
+-- Кнопка TP
+local tpFloatingBtn = Instance.new("TextButton")
+tpFloatingBtn.Name = "TPFloatingBtn"
+tpFloatingBtn.Size = UDim2.new(0.05, 0, 0.114, 0)
+tpFloatingBtn.Position = UDim2.new(0.05, 0, 0.4, 0)
+tpFloatingBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+tpFloatingBtn.BackgroundTransparency = 0.5
+tpFloatingBtn.Text = "🌀"
+tpFloatingBtn.TextScaled = true
+tpFloatingBtn.TextColor3 = Color3.new(1, 1, 1)
+tpFloatingBtn.BorderSizePixel = 0
+tpFloatingBtn.Parent = gui
+tpFloatingBtn.Active = true
+tpFloatingBtn.Visible = showButtons
+
+local tpFloatingCorner = Instance.new("UICorner")
+tpFloatingCorner.CornerRadius = UDim.new(1, 0)
+tpFloatingCorner.Parent = tpFloatingBtn
+
 -- ===== ОПОВЕЩЕНИЕ ПРИ ЗАПУСКЕ =====
 local startupNotification = Instance.new("Frame")
 startupNotification.Name = "StartupNotification"
@@ -182,41 +236,6 @@ local function showNotification(message, duration)
         end
     end)
 end
-
--- Брендинг "by Squirt"
-local branding = Instance.new("TextLabel")
-branding.Name = "Brand"
-branding.Size = UDim2.new(0, 120, 0, 30)
-branding.Position = UDim2.new(1, -130, 0, 10)
-branding.AnchorPoint = Vector2.new(1, 0)
-branding.Text = "by Squirt"
-branding.TextColor3 = Color3.fromRGB(0, 255, 0)
-branding.BackgroundTransparency = 1
-branding.Font = Enum.Font.GothamBold
-branding.TextSize = 18
-branding.TextStrokeTransparency = 0.6
-branding.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-branding.Parent = gui
-
--- Кнопка открытия главного меню
-local openBtn = Instance.new("TextButton")
-openBtn.Name = "OpenMenu"
-openBtn.Size = UDim2.new(0.05, 0, 0.114, 0)
-openBtn.Position = UDim2.new(0.05, 0, 0.25, 0)
-openBtn.Text = "Menu"
-openBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-openBtn.BackgroundTransparency = 0.5
-openBtn.TextColor3 = Color3.new(1, 1, 1)
-openBtn.TextScaled = true
-openBtn.Font = Enum.Font.GothamBold
-openBtn.TextSize = 20
-openBtn.Visible = true
-openBtn.Parent = gui
-openBtn.Active = true
-
-local openBtnCorner = Instance.new("UICorner")
-openBtnCorner.CornerRadius = UDim.new(1, 0)
-openBtnCorner.Parent = openBtn
 
 -- Главное меню
 local frame = Instance.new("Frame")
@@ -441,4 +460,227 @@ local teamToggle = Instance.new("TextButton")
 teamToggle.Name = "TeamToggle"
 teamToggle.Parent = espC
 teamToggle.Size = UDim2.new(1, -20, 0, 40)
-teamToggle.Position = UDi
+teamToggle.Position = UDim2.new(0, 10, 0, yPosition)
+teamToggle.Text = "Команды: ВКЛ"
+teamToggle.BackgroundColor3 = Color3.fromRGB(60, 120, 255)
+teamToggle.BackgroundTransparency = 0.1
+teamToggle.TextColor3 = Color3.new(1, 1, 1)
+teamToggle.BorderSizePixel = 0
+teamToggle.Font = Enum.Font.Gotham
+teamToggle.TextSize = 14
+
+local teamCorner = Instance.new("UICorner")
+teamCorner.CornerRadius = UDim.new(0, 8)
+teamCorner.Parent = teamToggle
+
+-- Обработчики для кнопок настроек
+distanceToggle.MouseButton1Click:Connect(function()
+    espSettings.showDistance = not espSettings.showDistance
+    distanceToggle.Text = "Дистанция: " .. (espSettings.showDistance and "ВКЛ" or "ВЫКЛ")
+    distanceToggle.BackgroundColor3 = espSettings.showDistance and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(45, 45, 55)
+end)
+
+healthToggle.MouseButton1Click:Connect(function()
+    espSettings.showHealth = not espSettings.showHealth
+    healthToggle.Text = "Здоровье: " .. (espSettings.showHealth and "ВКЛ" or "ВЫКЛ")
+    healthToggle.BackgroundColor3 = espSettings.showHealth and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(45, 45, 55)
+end)
+
+nameToggle.MouseButton1Click:Connect(function()
+    espSettings.showName = not espSettings.showName
+    nameToggle.Text = "Никнейм: " .. (espSettings.showName and "ВКЛ" or "ВЫКЛ")
+    nameToggle.BackgroundColor3 = espSettings.showName and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(45, 45, 55)
+end)
+
+teamToggle.MouseButton1Click:Connect(function()
+    espSettings.teamColor = not espSettings.teamColor
+    teamToggle.Text = "Команды: " .. (espSettings.teamColor and "ВКЛ" or "ВЫКЛ")
+    teamToggle.BackgroundColor3 = espSettings.teamColor and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(45, 45, 55)
+end)
+
+-- Функция создания ESP для игрока
+local function createESP(plr)
+    if espPlayers[plr] then
+        if espPlayers[plr].billboard then
+            espPlayers[plr].billboard:Destroy()
+        end
+        espPlayers[plr] = nil
+    end
+    
+    local char = plr.Character
+    if not char then return end
+    
+    local hrp = char:WaitForChild("HumanoidRootPart", 5)
+    local hum = char:WaitForChild("Humanoid", 5)
+    
+    if not hrp or not hum then return end
+    
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ESP_" .. plr.Name
+    billboard.Size = UDim2.new(0, 200, 0, 100)
+    billboard.Adornee = hrp
+    billboard.AlwaysOnTop = true
+    billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+    billboard.MaxDistance = espSettings.maxDistance
+    billboard.Parent = char
+    
+    local text = Instance.new("TextLabel")
+    text.Size = UDim2.new(1, 0, 1, 0)
+    text.BackgroundTransparency = 1
+    text.Text = plr.Name
+    text.TextColor3 = Color3.fromRGB(255, 255, 255)
+    text.Font = Enum.Font.GothamBold
+    text.TextSize = 16
+    text.TextStrokeTransparency = 0.3
+    text.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    text.TextYAlignment = Enum.TextYAlignment.Top
+    text.Parent = billboard
+    
+    espPlayers[plr] = {
+        billboard = billboard,
+        text = text,
+        char = char,
+        hrp = hrp,
+        hum = hum,
+        player = plr,
+        connections = {}
+    }
+    
+    local diedConnection = hum.Died:Connect(function()
+        if espPlayers[plr] and espPlayers[plr].text then
+            espPlayers[plr].text.Visible = false
+        end
+    end)
+    
+    local revivedConnection = hum:GetPropertyChangedSignal("Health"):Connect(function()
+        if hum.Health > 0 and espPlayers[plr] and espPlayers[plr].text then
+            espPlayers[plr].text.Visible = true
+        end
+    end)
+    
+    table.insert(espPlayers[plr].connections, diedConnection)
+    table.insert(espPlayers[plr].connections, revivedConnection)
+    
+    local characterAddedConnection = plr.CharacterAdded:Connect(function(newChar)
+        if espOn then
+            task.wait(0.5)
+            createESP(plr)
+        end
+    end)
+    
+    table.insert(espPlayers[plr].connections, characterAddedConnection)
+    
+    local characterRemovingConnection = plr.CharacterRemoving:Connect(function()
+        if espPlayers[plr] then
+            if espPlayers[plr].billboard then
+                espPlayers[plr].billboard:Destroy()
+            end
+            espPlayers[plr] = nil
+        end
+    end)
+    
+    table.insert(espPlayers[plr].connections, characterRemovingConnection)
+end
+
+-- Функция удаления ESP
+local function removeESP(plr)
+    if espPlayers[plr] then
+        if espPlayers[plr].connections then
+            for _, connection in ipairs(espPlayers[plr].connections) do
+                connection:Disconnect()
+            end
+        end
+        
+        if espPlayers[plr].billboard then
+            espPlayers[plr].billboard:Destroy()
+        end
+        
+        espPlayers[plr] = nil
+    end
+end
+
+-- Включение/выключение ESP
+espToggle.MouseButton1Click:Connect(function()
+    espOn = not espOn
+    espToggle.Text = espOn and "ESP ON" or "ESP OFF"
+    espToggle.BackgroundColor3 = espOn and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(45, 45, 55)
+    
+    if espOn then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= player then
+                createESP(plr)
+            end
+        end
+        showNotification("ESP включен", 2.0)
+    else
+        for plr, _ in pairs(espPlayers) do
+            removeESP(plr)
+        end
+        espPlayers = {}
+        showNotification("ESP выключен", 2.0)
+    end
+end)
+
+-- Обновление ESP каждый кадр
+RunService.RenderStepped:Connect(function()
+    if not espOn then return end
+    
+    local localChar = player.Character
+    local localHrp = localChar and localChar:FindFirstChild("HumanoidRootPart")
+    
+    for plr, data in pairs(espPlayers) do
+        if not Players:FindFirstChild(plr.Name) then
+            removeESP(plr)
+            continue
+        end
+        
+        local char = plr.Character
+        if not char or not data.hrp or not data.hrp.Parent then
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                data.hrp = char:FindFirstChild("HumanoidRootPart")
+                data.hum = char:FindFirstChild("Humanoid")
+                data.char = char
+                
+                if data.billboard then
+                    data.billboard.Adornee = data.hrp
+                end
+            else
+                continue
+            end
+        end
+        
+        local hrp = data.hrp
+        local hum = data.hum
+        
+        if hrp and hum then
+            local textParts = {}
+            
+            if espSettings.showName then
+                table.insert(textParts, plr.Name)
+            end
+            
+            if espSettings.showHealth and hum and hum.MaxHealth > 0 then
+                local health = math.floor(hum.Health)
+                local maxHealth = math.floor(hum.MaxHealth)
+                local healthPercent = health / maxHealth
+                
+                local healthColor
+                if healthPercent > 0.5 then
+                    healthColor = "🟢"
+                elseif healthPercent > 0.25 then
+                    healthColor = "🟡"
+                else
+                    healthColor = "🔴"
+                end
+                
+                table.insert(textParts, healthColor .. " " .. health .. "/" .. maxHealth)
+            end
+            
+            if espSettings.showDistance and localHrp then
+                local distance = math.floor((hrp.Position - localHrp.Position).Magnitude)
+                table.insert(textParts, "📏 " .. distance .. "m")
+            end
+            
+            if data.text then
+                data.text.Text = table.concat(textParts, "\n")
+                
